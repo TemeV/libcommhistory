@@ -439,19 +439,26 @@ GroupObject *GroupManager::group(int groupId) const
     return d->groups.value(groupId);
 }
 
-GroupObject *GroupManager::findGroup(const QString &localUid, const QString &remoteUid) const
+GroupObject *GroupManager::findGroup(const QString &localUid, const QString &remoteUid, bool isChatRoom) const
 {
-    return findGroup(localUid, QStringList() << remoteUid);
+    return findGroup(localUid, QStringList() << remoteUid, isChatRoom);
 }
 
-GroupObject *GroupManager::findGroup(const QString &localUid, const QStringList &remoteUids) const
+GroupObject *GroupManager::findGroup(const QString &localUid, const QStringList &remoteUids, bool isChatRoom) const
 {
-    foreach (GroupObject *g, d->groups) {
-        if (g->localUid() == localUid && g->remoteUids().size() == remoteUids.size()
-                && CommHistory::remoteAddressMatch(localUid, g->remoteUids(), remoteUids))
-            return g;
+    if (!isChatRoom) {
+        foreach (GroupObject *g, d->groups) {
+            if (g->localUid() == localUid && g->remoteUids().size() == remoteUids.size()
+                    && CommHistory::remoteAddressMatch(localUid, g->remoteUids(), remoteUids))
+                return g;
+        }
+    } else {
+        foreach (GroupObject *g, d->groups) {
+            if (g->localUid() == localUid
+                    && CommHistory::remoteAddressMatch(localUid, g->remoteUids().at(0), remoteUids.at(0)))
+                return g;
+        }
     }
-
     return 0;
 }
 

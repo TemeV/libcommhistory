@@ -69,16 +69,17 @@ void DeclarativeGroupManager::setUseBackgroundThread(bool enabled)
 }
 
 int DeclarativeGroupManager::createOutgoingMessageEvent(int groupId, const QString &localUid,
-                                                        const QString &remoteUid, const QString &text)
+                                                        const QString &remoteUid, const QString &text, bool isChatRoom)
 {
-    return createOutgoingMessageEvent(groupId, localUid, QStringList() << remoteUid, text);
+    return createOutgoingMessageEvent(groupId, localUid, QStringList() << remoteUid, text, isChatRoom);
 }
 
 int DeclarativeGroupManager::createOutgoingMessageEvent(int groupId, const QString &localUid,
-                                                        const QStringList &remoteUids, const QString &text)
+                                                        const QStringList &remoteUids, const QString &text, bool isChatRoom)
 {
+    DEBUG() << Q_FUNC_INFO << groupId << localUid << remoteUids << text << isChatRoom;
     if (groupId < 0)
-        groupId = ensureGroupExists(localUid, remoteUids);
+        groupId = ensureGroupExists(localUid, remoteUids, isChatRoom);
 
     if (groupId < 0)
         return -1;
@@ -125,22 +126,28 @@ bool DeclarativeGroupManager::setEventStatus(int eventId, int status)
     return model.modifyEvent(ev);
 }
 
-int DeclarativeGroupManager::ensureGroupExists(const QString &localUid, const QStringList &remoteUids)
+int DeclarativeGroupManager::ensureGroupExists(const QString &localUid, const QStringList &remoteUids, bool isChatRoom)
 {
+    qDebug() << Q_FUNC_INFO << localUid << ", " << remoteUids << ", " << isChatRoom;
     // Try to find an appropriate group
-    GroupObject *group = findGroup(localUid, remoteUids);
+    GroupObject *group = findGroup(localUid, remoteUids, isChatRoom);
     if (group) {
         return group->id();
     } else {
         Group g;
         g.setLocalUid(localUid);
         g.setRemoteUids(remoteUids);
-        g.setChatType(Group::ChatTypeP2P);
+        if (isChatRoom){
+            g.setChatType(Group::ChatTypeRoom);
+        } else {
+            g.setChatType(Group::ChatTypeP2P);
+        }
         DEBUG() << Q_FUNC_INFO << "Creating group for" << localUid << remoteUids;
         if (!addGroup(g)) {
             qWarning() << Q_FUNC_INFO << "Failed creating group";
             return -1;
         }
+        qDebug() << g.id();
         return g.id();
     }
 }

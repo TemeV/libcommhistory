@@ -106,8 +106,8 @@ public:
      * \param remoteUid remote UID
      * \return group
      */
-    Q_INVOKABLE CommHistory::GroupObject *findGroup(const QString &localUid, const QString &remoteUid) const;
-    Q_INVOKABLE CommHistory::GroupObject *findGroup(const QString &localUid, const QStringList &remoteUids) const;
+    Q_INVOKABLE CommHistory::GroupObject *findGroup(const QString &localUid, const QString &remoteUid, bool isChatRoom = false) const;
+    Q_INVOKABLE CommHistory::GroupObject *findGroup(const QString &localUid, const QStringList &remoteUids, bool isChatRoom = false) const;
 
     /*!
      * Get a list of all loaded group objects

@@ -54,12 +54,12 @@ public:
      *
      * If groupId is negative, an appropriate group will be found or created
      * inline if necessary. */
-    Q_INVOKABLE int createOutgoingMessageEvent(int groupId, const QString &localUid, const QString &remoteUid, const QString &text);
-    Q_INVOKABLE int createOutgoingMessageEvent(int groupId, const QString &localUid, const QStringList &remoteUids, const QString &text);
+    Q_INVOKABLE int createOutgoingMessageEvent(int groupId, const QString &localUid, const QString &remoteUid, const QString &text, bool isChatRoom = false);
+    Q_INVOKABLE int createOutgoingMessageEvent(int groupId, const QString &localUid, const QStringList &remoteUids, const QString &text, bool isChatRoom = false);
 
     Q_INVOKABLE bool setEventStatus(int eventId, int status);
 
-    Q_INVOKABLE int ensureGroupExists(const QString &localUid, const QStringList &remoteUids);
+    Q_INVOKABLE int ensureGroupExists(const QString &localUid, const QStringList &remoteUids, bool isChatRoom = false);
 
 public slots:
     void reload();
